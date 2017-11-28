@@ -1,6 +1,6 @@
 //
 //  GroceryListController.swift
-//  Grocery List
+//  GroceryList
 //
 //  Created by don't touch me on 11/28/17.
 //  Copyright © 2017 trvl, LLC. All rights reserved.
@@ -13,6 +13,7 @@ class GroceryListController: UITableViewController {
     
     var groceries = [Grocery]()
     var managedObjectContext: NSManagedObjectContext?
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,11 +22,10 @@ class GroceryListController: UITableViewController {
         managedObjectContext = appDelegate.persistentContainer.viewContext
         
         loadData()
+
     }
     
     func loadData() {
-        //let request: NSFetchRequest<NSManagedObject> = NSFetchRequest(entityName: "Grocery")
-        
         let request: NSFetchRequest<Grocery> = Grocery.fetchRequest()
         
         do {
@@ -38,22 +38,18 @@ class GroceryListController: UITableViewController {
         }
     }
     
+    
+
     @IBAction func addButton(_ sender: UIBarButtonItem) {
         let alertController = UIAlertController(title: "Grocery Item",
-                                              message: "What's to buy now?",
-                                       preferredStyle: UIAlertControllerStyle.alert)
+                                                message: "What's to buy now?",
+                                                preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField { (textField: UITextField) in
             
         }
         
         let addAction = UIAlertAction(title: "ADD", style: UIAlertActionStyle.default) { [weak self] (action: UIAlertAction) in
-            /*let textField = alertController.textFields?.first
-            //self?.groceries.append(textField!.text!)
-            
-            let entity = NSEntityDescription.entity(forEntityName: "Grocery", in: (self?.managedObjectContext)!)
-            let grocery = NSManagedObject(entity: entity!, insertInto: self?.managedObjectContext)
-            grocery.setValue(textField!.text, forKey: "item")*/
-            
+        
             let itemString: String?
             
             if(alertController.textFields?.first?.text != "") {
@@ -62,41 +58,42 @@ class GroceryListController: UITableViewController {
             else {
                 return
             }
-            
+        
             let grocery = Grocery(context: (self?.managedObjectContext)!)
             grocery.item = itemString
-            
+        
             do {
                 try self?.managedObjectContext?.save()
             }
             catch {
                 fatalError("Error in storing data")
             }
-            
+        
             self?.loadData()
         }
-        
+    
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: nil)
-        
+    
         alertController.addAction(addAction)
         alertController.addAction(cancelAction)
-        
+    
         present(alertController, animated: true, completion: nil)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-       
+        
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return self.groceries.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "groceryCell", for: indexPath)
-        
+
         let grocery = self.groceries[indexPath.row]
         
         cell.textLabel?.text = grocery.item
